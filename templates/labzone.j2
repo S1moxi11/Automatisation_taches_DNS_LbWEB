@@ -1,0 +1,16 @@
+$ORIGIN {{ domaine_lab }}. ;
+@       IN      SOA     {{groups['dns']|first}}.{{ domaine_lab }}. (
+                            {{timestamp.stdout}}         ;
+                            3600             ;
+                            600              ;
+                            86400            ;
+                            600 )           ;
+;
+
+{% for elt in groups['dns'] %}
+@       IN      NS      {{elt}}.{{ domaine_lab }}.
+{% endfor %}
+{% for elt in groups['all'] %} 
+{{elt}}     IN      A       {{hostvars[elt]['ansible_host']}}
+{% endfor %}
+

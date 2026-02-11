@@ -1,0 +1,36 @@
+---
+- name: Install bind9
+  hosts: dns
+  become: yes
+  tasks:
+  - name: Update
+    apt:
+      update_cache: yes
+
+  - name: Install bind9
+    apt:
+      name: bind9
+      state: present
+
+  - name: timestamp
+    ansible.builtin.shell:
+      cmd: date +%s&
+    register: timestamp
+    run_once: true
+
+  - name: Generation zones
+    ansible.builtin.template:
+      src: templates/labzone.j2
+      dest: /etc/named.conf
+      owner: bind
+      group: bind
+
+
+
+- name: Configuration DNS
+  hosts: all
+  become: yes
+  tasks:
+  - name: Import tâche
+    ansible.builtin.import_tasks:
+      file: tasks/set_dns.yml
