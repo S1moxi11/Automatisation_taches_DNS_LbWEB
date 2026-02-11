@@ -24,8 +24,15 @@
       dest: /etc/named.conf
       owner: bind
       group: bind
-
-
+  
+  - name: Modifs named.conf.local
+    ansible.builtin.blockinfile:
+      path: /etc/bind/named.conf.local
+      block: |
+        zone "lab.lan" {
+          type master;
+          file "/etc/named.conf";
+        };
 
 - name: Configuration DNS
   hosts: all
