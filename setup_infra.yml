@@ -82,3 +82,24 @@
       state: restarted
     when: state["changed"] == true
 
+- name: Serveurs WEB
+  hosts: web
+  become: yes
+  tasks:
+  - name: Update
+    apt:
+      update_cache: yes
+  - name: Install php & apache2
+    apt:
+      name: apache2, php
+      state: present
+  - name: Remove file
+    ansible.builtin.file:
+      path: /var/www/html/index.html
+      state: absent
+  - name: cp file
+    ansible.builtin.template:
+      src: files/index.php
+      dest: /var/www/html/index.php
+      owner: www-data
+      group: www-data
