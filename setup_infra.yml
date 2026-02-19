@@ -47,3 +47,38 @@
     ansible.builtin.import_tasks:
       file: tasks/set_dns.yml
 
+
+- name: Load balancer
+  hosts: lb
+  become: yes
+  tasks:
+  - name: Update
+    apt:
+      update_cache: yes
+  - name: Install apache2
+    apt:
+      name: apache2
+      state: present
+  - name: Boucle installation modules apache2
+    community.general.apache2_module:
+      name: "{{ item.name }}"
+      state: present
+    loop:
+      - { name: 'proxy_http'}
+      - { name: 'proxy_http2'}
+      - { name: 'proxy_balancer'}
+      - { name: 'lbmethod_byrequests'}
+  - name: Generation confs
+    ansible.builtin.template:
+      src: templates/lb-apache-conf.j2
+      dest: /etc/apache2/sites-available/000-default.conf
+      owner: www-data
+      group: www-data
+    register: state
+
+  - name: Reload apache2
+    ansible.builtin.service:
+      name: apache2
+      state: restarted
+    when: state["changed"] == true
+
