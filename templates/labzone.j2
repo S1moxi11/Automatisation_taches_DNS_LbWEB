@@ -1,5 +1,5 @@
-$ORIGIN {{ domaine_lab }}. ;
-@       IN      SOA     {{groups['dns']|first}}.{{ domaine_lab }}. (
+$TTL 604800
+@       IN      SOA     {{groups['dns']|first}}.{{ domaine_lab }}. email.{{ domaine_lab }}. (
                             {{timestamp.stdout}}         ;
                             3600             ;
                             600              ;

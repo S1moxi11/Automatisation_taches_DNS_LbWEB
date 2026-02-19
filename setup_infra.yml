@@ -9,7 +9,7 @@
 
   - name: Install bind9
     apt:
-      name: bind9
+      name: bind9, bind9utils
       state: present
 
   - name: timestamp
@@ -21,7 +21,7 @@
   - name: Generation zones
     ansible.builtin.template:
       src: templates/labzone.j2
-      dest: /etc/named.conf
+      dest: /etc/bind/db.local
       owner: bind
       group: bind
   
@@ -31,8 +31,13 @@
       block: |
         zone "lab.lan" {
           type master;
-          file "/etc/named.conf";
+          file "/etc/bind/db.local";
         };
+
+  - name: Reload bind9
+    ansible.builtin.service:
+      name: bind9
+      state: restarted
 
 - name: Configuration DNS
   hosts: all
@@ -41,3 +46,4 @@
   - name: Import tâche
     ansible.builtin.import_tasks:
       file: tasks/set_dns.yml
+
